@@ -104,7 +104,7 @@ disp(' ')
 % Load data in matlab (.mat) format
 % (we will learn later different load statements for different data format)
 
-load('data/Lab2_SVP0070RF_raw_ModifiedJday.mat')
+load('../data/Lab2_SVP0070RF_raw_ModifiedJday.mat')
 
 disp(' ')
 disp('QUESTION 1: Convince yourself (and me) that the data is stored in')
@@ -177,9 +177,10 @@ disp(' ')
 
 % Put the individual vectors into a single matrix
 data = [Jday, latitude, longitude];
-%disp(data(1:5,:))
 
-nanSet = find(isnan(data(:,2)) | isnan(data(:,3)));
+% Conditional statement to find NaN values ONLY in lat/long columns
+nanSet = find( isnan(data(:,2)) | isnan(data(:,3)) );
+% Removes rows with NaN values in data
 data(nanSet,:) = [];
 
 disp('Rows removed: ')
@@ -198,9 +199,21 @@ disp('longitude and latitude, respectively')
 disp(' ')
 
 histogram(data(:,1));
-histogram(data(:,2));
-histogram(data(:,3));
+title('Jday distribution');
+xlabel('Julian Day number');
+ylabel('Frequency');
+pause
 
+histogram(data(:,2));
+title('Latitude distribution');
+xlabel('Latitude (degrees)');
+ylabel('Frequency');
+pause
+
+h3 = histogram(data(:,3));
+title('Longitude distribution');
+xlabel('Longitude (degrees)');
+ylabel('Frequency');
 pause
 
 %%
@@ -211,7 +224,8 @@ disp('histogram that are clearly wrong?')
 disp('HINT: use the "zoom" commmand on the top bar of your figure')
 disp(' ')
 
-['TYPE CODE HERE']
+h3.BinEdges = [-10:0];
+disp('Latitude and Longitude both have 21 instances where the value is 0')
 
 pause
 
@@ -223,7 +237,15 @@ disp('Print the min and max values of latitude and longitude to check')
 disp('Lat_min  Lon_min  Lat_max  Lon_max')
 disp(' ')
 
-['TYPE CODE HERE']
+zeroSet = find( data(:,2) == 0 | data(:,3) == 0 );
+data(zeroSet,:) = [];
+
+disp('Rows removed: ')
+length(zeroSet)
+Lat_min = min(data(:,2:3))
+Lat_max = max(data(:,2))
+Lon_min = min(data(:,3))
+Lon_max = max(data(:,3))
 
 pause
 
@@ -237,7 +259,10 @@ disp('QUESTION 9: Plot the buoy trajectory on an x-y (lon/lat) plot')
 disp('Label your x- and y-axes including the units of each variable')
 disp(' ')
 
-['TYPE CODE HERE']
+plot(data(:,3),data(:,2))
+ylabel('Latitude (deg)')
+xlabel('Longitude (deg)')
+title('Buoy Trajectory')
 
 pause
 
@@ -255,8 +280,13 @@ disp('QUESTION 10: Remove in-plane buoy data. ')
 disp('Plot the new ice-only buoy trajectory and label your axes')
 disp(' ')
 
-['TYPE CODE HERE']
+airplanePoints = find(data(1:500,3) > -104.9446);
+data(airplanePoints,:) = [];
 
+plot(data(:,3),data(:,2))
+ylabel('Latitude (deg)')
+xlabel('Longitude (deg)')
+title('Ice-Only Buoy Trajectory')
 pause
 
 
