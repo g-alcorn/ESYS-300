@@ -46,7 +46,7 @@ clear all, close all
 
 
 
-root    = ['/Users/tremblay/Dropbox/Teaching/ESYS-300/'] ; 
+root    = ['/Users/brunotremblay/Dropbox/Teaching/ESYS-300/'] ; 
 
 
 
