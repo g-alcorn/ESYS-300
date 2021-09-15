@@ -139,7 +139,7 @@ disp('QUESTION 3: What are the units of time, latitude and longitude?')
 disp('HINT: the buoy was deployed in the Canadian Arctic Archipelago in May')
 disp(' ')
 
-disp('Time is measured in days. Latitude and longitude are both in degrees.') 
+disp('Time is measured in days since the beginning of the year (1 = January 1st). Latitude and longitude are both in degrees.') 
 
 pause
 
