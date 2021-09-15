@@ -242,7 +242,7 @@ data(zeroSet,:) = [];
 
 disp('Rows removed: ')
 length(zeroSet)
-Lat_min = min(data(:,2:3))
+Lat_min = min(data(:,2))
 Lat_max = max(data(:,2))
 Lon_min = min(data(:,3))
 Lon_max = max(data(:,3))
@@ -344,8 +344,50 @@ disp('Instead, plot (using subplot) the old and new time vectors to show')
 disp('that there are no missing data in the new time vector.')
 disp(' ')
 
-['TYPE CODE HERE']
+oldTime = data(:,1);
+timeNaN = find(isnan(data(:,1)));
 
+% There are three gaps in the data
+% Gap 1 is a single element
+y = [data(timeNaN(1)-1,1), data(timeNaN(1)+1,1)];
+x = [timeNaN(1)-1,timeNaN(1)+1];
+xp = [timeNaN(1)];
+data(timeNaN(1),1) = interp1(x,y,xp);
+
+% Gap 2 ranges from X=6368 to X=6472
+y = [data(6368,1), data(6472,1)];
+x = [6368, 6472];
+xp = [6369:1:6471];
+data(xp,1) = interp1(x,y,xp);
+
+% Gap 3 ranges from X=9072 to X=9074
+y = [data(9072,1), data(9074,1)];
+x = [9072, 9074];
+xp = [9073];
+data(xp,1) = interp1(x,y,xp);
+
+% Gap 4 ranges from X=19618 to X=29620
+y = [data(19618,1), data(29620,1)];
+x = [19618, 29620];
+xp = [19619:1:29620];
+data(xp,1) = interp1(x,y,xp);
+
+% Gap 5 ranges from X=32970 to X=32986
+y = [data(32970,1), data(32986,1)];
+x = [32970, 32986];
+xp = [32971:1:32986];
+data(xp,1) = interp1(x,y,xp);
+
+% Display on 2x1 plot
+subplot(2,1,1);
+plot(data(:,1))
+title('Jday with NaN removed via interpolation')
+subplot(2,1,2);
+plot(oldTime)
+title('Jday with NaN')
+
+% Added to make testing work
+anew = data;
 
 % DO NOT REMOVE THOSE LINES of CODE BELOW. This is for me to check if you have successfully removed the NaN.
 
@@ -361,7 +403,7 @@ disp('QUESTION 12: How many days of data does this data set represent?')
 disp(' ')
 %
 
-['TYPE CODE HERE']
+disp(['# days: ', num2str(data(length(data(:,1)),1))])
 
 pause
 
@@ -372,7 +414,4 @@ disp('QUESTION 13: How many data points of (time, lat, lon) are there in ')
 disp('the cleaned up dataset?')
 disp(' ')
 
-['TYPE CODE HERE']
-
-
-
+disp(['# datapoints: ', int2str(length(data))])
