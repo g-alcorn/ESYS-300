@@ -129,7 +129,7 @@ headers = textscan(fid, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s',...
 % 16 cols - 1 datetime, 2 strings, 12 real numbers, 1 string
 data = textscan(fid, '%s %s %s %f %f %f %f %f %f %f %f %f %f %f %f %s',...
     'HeaderLines', 1, 'delimiter', ',');
-% DO NOT USE DATE TIME
+% DO NOT USE DATE TIMEd
 % Close file
 fclose(fid);
 
