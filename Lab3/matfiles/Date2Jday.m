@@ -1,35 +1,51 @@
 function [julianday] = Date2Jday(dates)
-%DATE2JDAY Summary of this function goes here
-%   Detailed explanation goes here
+%DATE2JDAY Converts cell array of date strings into array of Julian days
+%   Input argument - dates
+%       Cell array containing strings that describe date and time
+%       Data in format 'yyyy-MM-dd hh:mm:ss'
+%   Output argument - julianday
+%       Array of Julian day values for each cell in dates
+%       Each value is a decimal accounting for time
 
 JdayFirstOfMonth = [1 32 60 91 121 152 182 213 244 274 305 335]; 
 % Start 2013-04-29 2:30
 % End 2015-08-11 12:30
-firstIndex = length(dates);
+% Must declare these outside scope of for-loops
+lastIndex = length(dates{1});
+answer = zeros(lastIndex,1);
+yearCounter = 0;
+yearDifference = 0;
 
-lastYear = dates{1}(1:4);
-lastMonth = dates{1}(6:7);
-lastDay = dates{1}(9:10);
-lastTime = dates{1}(12:19);
+% Reverse for-loop through input argument
+% Calculate every jday individually
+% Day value must subtract 1 in order to start at 0
+% 48 measurements per day
+for row = lastIndex:-1:1
+    % Extract date information from string within cell within cell
+    thisMonth = str2double(dates{1}{row}(6:7));
+    thisDay = str2double(dates{1}{row}(9:10)) - 1;
+    thisHour = str2double(dates{1}{row}(12:13));
+    thisMinute = str2double(dates{1}{row}(15:16)) / 60;
 
-firstYear = dates{firstIndex}(1:4);
-firstMonth = dates{firstIndex}(6:7);
-firstDay = dates{firstIndex}(9:10);
-firstTime = dates{firstIndex}(12:19);
+    % Count new year if dataset is more than 1 year
+    if thisDay == 0 && thisMonth == 1 && thisHour == 0 && thisMinute == 0
+        yearCounter = yearCounter + 1;
+    end
 
-% dateTimeStr = split(dates{1}, ' ');
-% dateStr = split(dateTimeStr(:,1), '-');
-% timeStr = split(dateTimeStr(:,2), ':');
+    % Determine offset based on number of years
+    if yearCounter == 1
+        yearDifference = 365;
+    elseif yearCounter > 1
+        yearDifference = 365 * yearCounter;
+    end
 
-% length = numel(dateStr)/3;
-% YearJDay = 365 * (str2double(dateStr{1,1,1}) - 2013);
-% MonthJDay = JdayFirstOfMonth(str2double(dateStr{1,2,1}));
+    thisJday = JdayFirstOfMonth(thisMonth) + thisDay + (thisHour + thisMinute) / 24 + yearDifference;
 
+    answer(lastIndex - row + 1) = thisJday;
+end
 
-% jdayStart = JdayFirstOfMonth(str2num(dateStr{39545,2}))...
-%    + str2num(dateStr{39545,3});
-
-% Set julianday = answer
+% Return answer
+julianday = answer;
 
 end
 

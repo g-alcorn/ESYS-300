@@ -126,7 +126,7 @@ headers = textscan(fid, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s',...
 
 % Read data below header
 % Use textscan for all rows below header
-% 16 cols - 1 datetime, 2 strings, 12 real numbers, 1 string
+% 16 cols - 3 strings, 12 real numbers, 1 string
 data = textscan(fid, '%s %s %s %f %f %f %f %f %f %f %f %f %f %f %f %s',...
     'HeaderLines', 1, 'delimiter', ',');
 % DO NOT USE DATE TIMEd
@@ -149,7 +149,7 @@ disp('QUESTION 1: Transform the Date tag into a Julian Day')
 % JdayFirstOfMonth = [1 32 61 92 122 153 183 214 245 275 306 336] ; 
 % MonthJday = JdayFirstOfMonth(Month)' ; 
 
-julianday = Date2Jday(data(:,1));         % [Complete the command]
+julianday = Date2Jday(vertcat(data(:,1)));         % [Complete the command]
 
 [min(julianday), max(julianday), numel(julianday)]  % DO NOT delete
 
