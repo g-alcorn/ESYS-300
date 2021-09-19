@@ -1,11 +1,12 @@
 function [julianday] = Date2Jday(dates)
 %DATE2JDAY Converts cell array of date strings into array of Julian days
 %   Input argument - dates
-%       Cell array containing strings that describe date and time
-%       Data in format 'yyyy-MM-dd hh:mm:ss'
+%       Cell array containing cells containing strings that 
+%       describe date and time of each measurement.
+%       Data in format 'yyyy-MM-dd hh:mm:ss'.
 %   Output argument - julianday
-%       Array of Julian day values for each cell in dates
-%       Each value is a decimal accounting for time
+%       Array of Julian day values for each cell in dates.
+%       Each value is a decimal accounting for time.
 
 JdayFirstOfMonth = [1 32 60 91 121 152 182 213 244 274 305 335]; 
 % Start 2013-04-29 2:30
