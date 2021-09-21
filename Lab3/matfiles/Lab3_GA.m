@@ -11,7 +11,7 @@
 % Upload your Laboratory on both Dropbox and MyCourses by 12:00 PM the day 
 % before next class.
 %
-% PLEASE RENAME YOUR .m file as Lab2_[YourInitial].m
+% PLEASE RENAME YOUR .m file as Lab3_[YourInitial].m
 %
 % Hand In only this m-file with your answers inserted within the program below.
 % 
@@ -114,9 +114,8 @@ pause
 filename = 'Lab3_SVP0070RF_raw.csv' ;
 
 % Open file
-% Generate fid 
-csvPath = strcat('../data/',filename);
-fid = fopen(csvPath);
+% Generate fid
+fid = fopen(strcat('../data/',filename));
 
 % Read header (1 line of data) 
 % Use textscan for the header row
@@ -126,7 +125,6 @@ headers = textscan(fid, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s',...
     1, 'delimiter', ',');
 
 % Read data below header
-% Use textscan for all rows below header
 % 16 cols - 3 strings, 12 real numbers, 1 string
 data = textscan(fid, '%s %s %s %f %f %f %f %f %f %f %f %f %f %f %f %s',...
     'HeaderLines', 1, 'delimiter', ',');
@@ -134,7 +132,7 @@ data = textscan(fid, '%s %s %s %f %f %f %f %f %f %f %f %f %f %f %f %s',...
 % Close file
 fclose(fid);
 
-%
+%%
 disp('QUESTION 1: Transform the Date tag into a Julian Day')
 
 %
@@ -150,12 +148,13 @@ disp('QUESTION 1: Transform the Date tag into a Julian Day')
 % JdayFirstOfMonth = [1 32 61 92 122 153 183 214 245 275 306 336] ; 
 % MonthJday = JdayFirstOfMonth(Month)' ; 
 
-julianday = Date2Jday(vertcat(data(:,1)));         % [Complete the command]
+julianday = Date2Jday(vertcat(data{1}{:}));         % [Complete the command]
 
 [min(julianday), max(julianday), numel(julianday)]  % DO NOT delete
 
 pause
 
+%%
 disp('QUESTION 2: Plot the data using a projection that is centered')
 disp('on the CAA using geoshow')
 
@@ -166,12 +165,13 @@ disp('on the CAA using geoshow')
 % for a list of pojections supported by MATLAB.
 
 % Load data
+load('../data/Lab3_SVP0070RF_Clean.mat');
+lat = Buoy(:,2);
+lon = Buoy(:,3);
 
-['type code here']
-
-% plot using geoshow
-
-
-['type code here']
-
-
+% Plot
+axesm('lambert','MapLatLimit',[60 90], 'Frame', 'on', 'Grid', 'on');
+worldmap([65 78],[-120 -80]);
+geoshow('landareas.shp', 'FaceColor', 'white');
+geoshow(lat,lon,'DisplayType','Line','LineWidth',0.75);
+figure(gcf);
