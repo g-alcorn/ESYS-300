@@ -51,7 +51,6 @@
 
 clear all, close all
 
-%
 % Define path
 
 flag = 'Student' ;
@@ -87,10 +86,9 @@ disp(' ')
 disp('QUESTION 1: Do a scatter plot of Global Jan-Feb-Mar Mean temperature anomaly')
 disp('as a function of the Global Yearly Mean temperature anomaly from 1880 to 2015')
 disp(' ')
-%
 
 % Load GISS-Temperature data: 1880 to today
-filename = '../data/gistemp1200_GHCNv4_ERSSTv5.nc';
+filename = 'gistemp1200_GHCNv4_ERSSTv5.nc';
 lat = ncread(filename,'lat');                   % Degrees
 lon = ncread(filename,'lon');                   % Degrees
 time = ncread(filename,'time');                 % Days since 1800-01-01
@@ -113,27 +111,26 @@ globalMonthlyMean = transpose(squeeze(mean(monthlyMeanLat,1,'omitnan')));
 
 % Use modified rolling-average method to get J-F-M average
 % Index jumps 1 year
-% Average i, i+1, i+2
-% Max ind is 1692 to allow J-F-M average for 2021
-ind = 1:12:1692;
+% Max ind is 1695 to allow J-F-M average for 2021
+ind = 1:12:1704;
 jfmMean = (globalMonthlyMean(ind) + globalMonthlyMean(ind+1) + globalMonthlyMean(ind+2)) / 3;
 
 % Plot the yearly mean temperature time series just to be safe
-fig1 = figure(1);
+figure
+subplot(2,1,1)
 plot(timeSeries(1:141),globalYearlyMean)
-ylim([-.75,1.5])
+ylim([-0.75,1.5])
 xlabel('Year')
-ylabel('Anomaly (*C)')
+ylabel('Annual temp anomaly (*C)')
 title('Global mean annual temperature anomaly, 1880-2020')
-figure(gcf)
 
 % Do the scatter plot
-fig2 = figure(2);
-scatter(timeSeries(1:141),globalYearlyMean)
-ylim([-.75,1.5])
-xlabel('Year');
-ylabel('Anomaly (*C)')
-title('Global mean annual temperature anomaly, 1880-2020')
+subplot(2,1,2)
+scatter(jfmMean(1:141),globalYearlyMean,24,'k','.')
+ylim([-0.75,1.5])
+xlabel('Global Mean Jan-Feb-Mar temp anomaly (*C)');
+ylabel('Annual temp anomaly (*C)')
+title('Global mean annual anomaly vs mean Jan-Feb-mar anomaly')
 figure(gcf)
 
 pause
@@ -144,97 +141,150 @@ pause
 % Use JFM of 2016 for the projection.
 % Use yearly 2016 mean to compare your projection with reality
 % We will use 2017 to repeat the exercise.
-
 disp(' ')
 disp('QUESTION 2: Calculate and plot the best linear fit and 95% confidence')
 disp('interval on your figure 2')
 disp(' ')
-% Change X axis to JFM means
+close(gcf);
+
 % HINT: https://en.wikipedia.org/wiki/Standard_deviation
-close([fig1,fig2]);
+% 95% confidence = 1.959964 * std
+confFactor95 = 1.959964;
 
 % Dec 2015 = month 1632, end of year 136
-% Jan 2017 = 1655
-% Jan 2016 = 1643
+% Jan 2016 = 1633
+% Apr 2016 = 1636
 % Make polyfit equation, then fill values for series
-trend = polyfit(jfmMean(1:136),globalYearlyMean(1:136),1);
-trendline = trend(1) * jfmMean(1:136) + trend(2);
-detrended = globalYearlyMean(1:136) - trendline;
+trend = polyfit(jfmMean(1:135),globalYearlyMean(1:135),1);
+trendline = polyval(trend, jfmMean(1:135));
+detrended = globalYearlyMean(1:135) - trendline;
+
 % Make 2 more lines - trendline + 2*std; trendline - 2*std
-upperConfLim = trendline + 2 * std(detrended);
-lowerConfLim = trendline - 2 * std(detrended);
+upperConfLim = trendline + confFactor95 * std(detrended);
+lowerConfLim = trendline - confFactor95 * std(detrended);
 
 % Plot polyfit over scatter
-fig3 = figure(3);
-plot(jfmMean(1:136),trendline,'-r',...
-    jfmMean(1:136),upperConfLim,'-b',...
-    jfmMean(1:136),lowerConfLim,'-b')
+fig2 = figure(2);
+scatter(jfmMean(1:135),globalYearlyMean(1:135),24,'k','.')
 hold on;
-scatter(jfmMean(1:136),globalYearlyMean(1:136))
-ylim([-.8,1.4])
-yticks([-.8:0.2:1.4])
-xlabel('Jan-Feb-March global mean temperature (*C)');
-ylabel('Global annual temperature anomaly (*C)')
-title('Global mean annual temperature anomaly, 1880-2020')
+plot(jfmMean(1:135),trendline,'-m',...
+     jfmMean(1:135),upperConfLim,'-b',...
+     jfmMean(1:135),lowerConfLim,'-b')
+ylim([-0.8,1.4])
+yticks([-0.8:0.2:1.4])
+xlabel('Global mean Jan-Feb-Mar temperature anomaly (*C)');
+ylabel('Annual temp anomaly (*C)')
+title('Global mean annual anomaly vs mean Jan-Feb-mar anomaly, 1880-2015')
+legend('Data','Line of best fit',...
+       '95% confidence limit',...
+       'Location','southoutside')
 figure(gcf)
 
 pause
 
 %%
-
 disp(' ')
 disp('QUESTION 3: The 95% confidence correspond to approximately how many')
 disp('standard deviation away from the mean?'), 
 disp(' ') 
 
 disp(' ')
-disp('95% confidence corresponds to about 2 standard deviations')
+disp('95% confidence corresponds to 1.959964 standard deviations,')
+disp('according to Wikipedia.')
 disp(' ')
 
 pause
 
 %%
-
 disp(' ')
 disp('QUESTION 4: Plot the projected 2016 temperature based on 2016 JFM')
-disp('using a RED CROSS on Fig 2')
+disp('using a RED CROSS on fig from Q2')
 disp(' ')
-%
+close(gcf)
 
-disp(['Type Code Here'])
-    
+% 2016 is year 137
+projection = polyval(trend, jfmMean(137));
+
+fig3 = figure(3);
+scatter(jfmMean(1:135),globalYearlyMean(1:135),24,'k','.')
+hold on
+plot(jfmMean(137),projection,'xr',...
+     jfmMean(1:135),trendline,'-m',...
+     jfmMean(1:135),upperConfLim,'-b',...
+     jfmMean(1:135),lowerConfLim,'-b')
+ylim([-0.8,1.6])
+yticks([-0.8:0.2:1.6])
+xlabel('Global mean Jan-Feb-Mar temperature anomaly (*C)')
+ylabel('Annual temp anomaly (*C)')
+title('Predicting 2016 global mean annual temperature anomaly')
+legend('Data','Projected 2016 temperature anomaly',...
+       'Line of best fit',...
+       '95% confidence limit',...
+       'Location','southoutside')
+figure(gcf)
+
 pause
 
 %%
-
 disp(' ')
 disp('QUESTION 5: How certain (i.e. 90%, 95% or 99%) are you that the ')
 disp('2016 global mean yearly mean temperature is the going to be the ')
 disp('warmest year on record? PLOT your (90,95 or 99%) confidence interval')
-disp('on the figure 2 to justify your answer.')
+disp('on the fig from Q2 to justify your answer.')
 disp(' ')
-%
-disp('[TYPE YOUR ANSWER IN WORD]')
 
-% show plot here
+disp('I am 99% certain the projected 2016 global mean annual temperature')
+disp('will be the highest on record.')
+disp('The lower limit of the 99% confidence interval is y = 0.958278.')
+disp('The highest value of the 1880-2015 data is y = 0.919214.')
+close(gcf)
 
-disp(['Type Code Here'])
+% 99% confidence = 2.575829 * std
+confFactor99 = 2.575829;
+
+fig4 = figure(4);
+scatter(jfmMean(1:135),globalYearlyMean(1:135),24,'k','.')
+hold on
+errorbar(jfmMean(137),projection,2.575829*std(detrended),'xr')
+hold on
+plot(jfmMean(1:135),trendline,'-m',...
+     jfmMean(1:135),upperConfLim,'-b',...
+     jfmMean(1:135),lowerConfLim,'-b')
+ylim([-0.8,2])
+xlabel('Global mean Jan-Feb-Mar temperature anomaly (*C)')
+ylabel('Annual temp anomaly (*C)')
+title('Predicting 2016 global mean annual temperature anomaly')
+legend('Data','Projected 2016 temperature anomaly with 99% C.I.',...
+       'Line of best fit',...
+       '95% confidence limit',...
+       'Location','southoutside')
+figure(gcf)
 
 pause
 
 %%
-
 disp(' ')
 disp('QUESTION 6: Plot the same projected 2016 temperature +- confidence interval')
 disp('in your figure 1 and color in green the actual 2016 Global Mean Yearly')
 disp('Mean Temperature Anomaly')
 disp(' ')
+close(gcf)
 
-% Use different color for the projected and actual temperature anomaly for
-% clarity
-%
-
-disp(['Type Code Here'])
+fig5 = figure(5);
+plot(timeSeries(1:136),globalYearlyMean(1:136))
+hold on
+errorbar(timeSeries(137),projection,2.575829*std(detrended),'xr')
+hold on
+plot(timeSeries(137),globalYearlyMean(137),'*g')
+ylim([-0.8,2])
+xlabel('Year')
+ylabel('Annual temp anomaly (*C)')
+title('Global mean annual temperature anomaly, 1880-2016')
+legend('Global mean annual temperature anomaly',...
+       'Projected 2016 temperature anomaly with 99% C.I.',...
+       'Actual 2016 temperature anomaly',...
+       'Location','southoutside')
+figure(gcf)
 
 pause
 
@@ -243,19 +293,19 @@ pause
 
 %%
 %
-disp(' ')
-disp('QUESTION 7: Plot the projected 2017 temperature +- confidence interval')
-disp('in your figure 1 (using a different color)')
-disp(' ')
+% disp(' ')
+% disp('QUESTION 7: Plot the projected 2017 temperature +- confidence interval')
+% disp('in your figure 1 (using a different color)')
+% disp(' ')
+% % 
 % 
-
-disp(['Type Code Here'])
-
-pause
+% disp(['Type Code Here'])
+% 
+% pause
 
 %%
 
-disp(' ')
-disp('QUESTION 8: Is 2017 likely to be the warmest year on record?')
-disp(' ')
-disp('[TYPE ANSWER HERE] ')
+% disp(' ')
+% disp('QUESTION 8: Is 2017 likely to be the warmest year on record?')
+% disp(' ')
+% disp('[TYPE ANSWER HERE] ')
