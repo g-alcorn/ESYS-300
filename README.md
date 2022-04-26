@@ -3,6 +3,8 @@
 *McGill University*\
 *Fall 2021*
 
+**Grade Received: A**
+
 This is a repository dedicated to storing various MATLAB labs, exercises, and projects for ESYS 300.
 
 This repository also serves as a tool to practice the following:
